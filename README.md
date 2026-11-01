@@ -9,6 +9,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/StabilityNexus/Fate-Solidity/releases/tag/polygon-2026-10-30"><img alt="Polygon deployment" src="https://img.shields.io/badge/Polygon-2026--10--30-8247E5?logo=polygon&logoColor=white"></a>
   <a href="https://github.com/StabilityNexus/Fate-Solidity/releases/tag/sepolia-2026-10-21"><img alt="Sepolia deployment" src="https://img.shields.io/badge/Sepolia-2026--10--21-627EEA?logo=ethereum&logoColor=white"></a>
   <a href="https://github.com/StabilityNexus/Fate-Solidity"><img alt="Solidity" src="https://img.shields.io/badge/Solidity-0.8.33-363636?logo=solidity"></a>
   <a href="http://evm.fate.stability.nexus/"><img alt="Live app" src="https://img.shields.io/badge/app-evm.fate.stability.nexus-22c55e"></a>
@@ -36,11 +37,10 @@
 4. [Timeline](#timeline)
 5. [Work done](#work-done)
 6. [Deployments](#deployments)
-7. [Known issues](#known-issues)
-8. [Challenges and lessons](#challenges-and-lessons)
-9. [Future work](#future-work)
-10. [Acknowledgements](#acknowledgements)
-11. [All pull requests](#all-pull-requests)
+7. [Challenges and lessons](#challenges-and-lessons)
+8. [Future work](#future-work)
+9. [Acknowledgements](#acknowledgements)
+10. [All pull requests](#all-pull-requests)
 
 ## Abstract
 
@@ -48,26 +48,26 @@ Fate is a prediction-pool protocol: each pool has a bull coin and a bear coin ba
 
 This project made Fate an oracle of its own. I built a **sentiment oracle** that reads a pool's bull/bear split, smooths it with an **EWMA**, and exposes it through the org-wide `IOracle` interface, so one Fate pool can drive another. Around it I hardened the core contracts (any base-token decimals, a pool-wide trade lock, per-pool leverage, slippage bounds, permit, a native-currency helper) and replaced the hardcoded treasury with a **factory-held dev fee**.
 
-On the frontend I rebuilt the data layer on direct RPC with a **chunked log scanner** and on-chain counters, with no external indexer, and added the Pool Explorer, buy and sell previews, portfolio history and P&L, and local backup and restore. Everything is deployed on **Ethereum Sepolia** and verified, and the app at evm.fate.stability.nexus runs against it.
+On the frontend I rebuilt the data layer on direct RPC with a **chunked log scanner** and on-chain counters, with no external indexer, and added the Pool Explorer, buy and sell previews, portfolio history and P&L, and local backup and restore. Everything is deployed on **Polygon mainnet** and **Ethereum Sepolia** and verified, and the app at evm.fate.stability.nexus runs against both.
 
 ## Deliverables
 
 | Project | What it is | Release | Published on |
 |---|---|---|---|
-| [**Fate-Solidity**](https://github.com/StabilityNexus/Fate-Solidity) | Fate contracts: pools, coins, sentiment oracle, adapters (Solidity + Foundry) | [`sepolia-2026-10-21`](https://github.com/StabilityNexus/Fate-Solidity/releases/tag/sepolia-2026-10-21) | Ethereum Sepolia, verified on Etherscan |
-| [**Fate-EVM-Frontend**](https://github.com/StabilityNexus/Fate-EVM-Frontend) | Web app for creating, exploring and trading pools (Next.js) | `main` | Web: [evm.fate.stability.nexus](http://evm.fate.stability.nexus/) |
+| [**Fate-Solidity**](https://github.com/StabilityNexus/Fate-Solidity) | Fate contracts: pools, coins, sentiment oracle, adapters (Solidity + Foundry) | [`polygon-2026-10-30`](https://github.com/StabilityNexus/Fate-Solidity/releases/tag/polygon-2026-10-30), [`sepolia-2026-10-21`](https://github.com/StabilityNexus/Fate-Solidity/releases/tag/sepolia-2026-10-21) | Polygon and Ethereum Sepolia, verified |
+| [**Fate-EVM-Frontend**](https://github.com/StabilityNexus/Fate-EVM-Frontend) | Web app for creating, exploring and trading pools (Next.js) | `main` (v1.0.0 pending review) | Web: [evm.fate.stability.nexus](http://evm.fate.stability.nexus/) |
 | [**IndexedDB-Import-Export**](https://github.com/AOSSIE-Org/IndexedDB-Import-Export) | IndexedDB backup library, built with Atharva Naik | contributed to v1 | npm: [`@aossie-org/idb-backup`](https://www.npmjs.com/package/@aossie-org/idb-backup) |
 
 ### By the numbers
 
 | | Fate-Solidity | Fate-EVM-Frontend | IndexedDB-Import-Export | Other repos | **Total** |
 |---|:-:|:-:|:-:|:-:|:-:|
-| **Merged PRs** | 40 | 43 | 4 | 3 | **90** |
-| **Open PRs** | 7 | 6 | 0 | 6 | **19** |
+| **Merged PRs** | 51 | 53 | 4 | 3 | **111** |
+| **Open PRs** | 0 | 1 | 0 | 6 | **7** |
 | **PRs reviewed** | 0 | 4 | 1 | 10 | **15** |
 
-- 220 Foundry tests in 24 files (unit, fuzz, invariant, Sepolia fork), and Vitest unit tests for the frontend logic, all run in CI.
-- Mentors merged the PRs in batches: 39 by Bruno, 26 by Aditya, 10 by Blizet, 10 by Sarthak.
+- 229 Foundry tests in 24 files (unit, fuzz, invariant, Sepolia fork), and Vitest unit tests for the frontend logic, all run in CI.
+- Mentors merged the PRs in batches: 41 by Bruno, 34 by Aditya, 10 by Sarthak, 8 by Blizet. I merged 14 myself after becoming a maintainer, and the IndexedDB maintainers merged 4.
 
 ### Technologies
 
@@ -79,7 +79,7 @@ On the frontend I rebuilt the data layer on direct RPC with a **chunked log scan
 ## How it works
 
 1. A creator picks a base token (for example WETH), an oracle and fees, and the factory deploys a pool with a bull coin and a bear coin.
-2. Users buy either side with the base token (or ETH, through the native-currency helper). Every buy and sell first calls `rebalance()`, which reads the oracle and moves reserves from the losing side to the winning one, scaled by the pool's leverage.
+2. Users buy either side with the base token (or the native currency, ETH or POL, through the native-currency helper). Every buy and sell first calls `rebalance()`, which reads the oracle and moves reserves from the losing side to the winning one, scaled by the pool's leverage.
 3. Fees go to the coin holders, the pool creator and the protocol's dev fee receiver, which the factory's `dev` can change for every pool at once.
 4. The **sentiment oracle** reads a pool's bull share of value (0.5 is neutral), smooths it over time, and an adapter turns it into a price. Any new pool can then use another pool's sentiment as its oracle.
 
@@ -121,7 +121,7 @@ On the frontend I rebuilt the data layer on direct RPC with a **chunked log scan
 | [#51](https://github.com/StabilityNexus/Fate-Solidity/pull/51), [#53](https://github.com/StabilityNexus/Fate-Solidity/pull/53), [#55](https://github.com/StabilityNexus/Fate-Solidity/pull/55) | Mint against the amount actually delivered, `sellFrom`, and ERC-2612 permit |
 | [#52](https://github.com/StabilityNexus/Fate-Solidity/pull/52), [#56](https://github.com/StabilityNexus/Fate-Solidity/pull/56), [#59](https://github.com/StabilityNexus/Fate-Solidity/pull/59) | An ownerless pool, hardened rebalance and fee transfers, and one lock across both coins during a trade |
 | [#61](https://github.com/StabilityNexus/Fate-Solidity/pull/61), [#65](https://github.com/StabilityNexus/Fate-Solidity/pull/65) | Per-pool leverage, and a slippage bound on buy and sell |
-| [#63](https://github.com/StabilityNexus/Fate-Solidity/pull/63) | `NativeCurrencyHelper` for trading with ETH |
+| [#63](https://github.com/StabilityNexus/Fate-Solidity/pull/63) | `NativeCurrencyHelper` for trading with the native currency (ETH or POL) |
 | [#26](https://github.com/StabilityNexus/Fate-Solidity/pull/26), [#28](https://github.com/StabilityNexus/Fate-Solidity/pull/28), [#69](https://github.com/StabilityNexus/Fate-Solidity/pull/69) | Treasury fees went first to a shared vault, then (Bruno's redesign) to a factory-held dev fee with a two-step `dev` handover |
 
 ### 3. Testing, deployment and CI (Fate-Solidity)
@@ -131,8 +131,10 @@ On the frontend I rebuilt the data layer on direct RPC with a **chunked log scan
 | [#41](https://github.com/StabilityNexus/Fate-Solidity/pull/41), [#47](https://github.com/StabilityNexus/Fate-Solidity/pull/47) | Fuzz and invariant tests for coin math and rebalance, plus oracle, fee and adapter edge tests |
 | [#46](https://github.com/StabilityNexus/Fate-Solidity/pull/46) | Fork test against the live Sepolia deployment |
 | [#45](https://github.com/StabilityNexus/Fate-Solidity/pull/45), [#67](https://github.com/StabilityNexus/Fate-Solidity/pull/67), [#71](https://github.com/StabilityNexus/Fate-Solidity/pull/71) | Three Sepolia deployments, each recorded in Deployments.md and tagged |
+| [#81](https://github.com/StabilityNexus/Fate-Solidity/pull/81) | The Polygon mainnet deployment, recorded in Deployments.md and tagged |
 | [#68](https://github.com/StabilityNexus/Fate-Solidity/pull/68) | Fixed `forge script` deploys after Sepolia's Glamsterdam gas repricing |
-| [#48](https://github.com/StabilityNexus/Fate-Solidity/pull/48), [#58](https://github.com/StabilityNexus/Fate-Solidity/pull/58), [#64](https://github.com/StabilityNexus/Fate-Solidity/pull/64), [#66](https://github.com/StabilityNexus/Fate-Solidity/pull/66), [#76](https://github.com/StabilityNexus/Fate-Solidity/pull/76) | Pinned build, CI with Slither and a nightly fuzz run, and a pinned forge-std |
+| [#48](https://github.com/StabilityNexus/Fate-Solidity/pull/48), [#58](https://github.com/StabilityNexus/Fate-Solidity/pull/58), [#64](https://github.com/StabilityNexus/Fate-Solidity/pull/64), [#66](https://github.com/StabilityNexus/Fate-Solidity/pull/66), [#76](https://github.com/StabilityNexus/Fate-Solidity/pull/76), [#80](https://github.com/StabilityNexus/Fate-Solidity/pull/80) | Pinned build, CI with Slither and a nightly fuzz run, a pinned forge-std, and a build with no lint or Slither warnings |
+| [#79](https://github.com/StabilityNexus/Fate-Solidity/pull/79) | The AI security review of the contracts and its remediations, published in `security-reviews/` |
 | [#49](https://github.com/StabilityNexus/Fate-Solidity/pull/49) | README and oracle integration guide |
 
 ### 4. Frontend (Fate-EVM-Frontend)
@@ -145,11 +147,15 @@ On the frontend I rebuilt the data layer on direct RPC with a **chunked log scan
 | [#109](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/109), [#113](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/113) | Per-chain RPC fallback, and a chunked log scanner that fixed history scans that had never worked |
 | [#121](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/121), [#175](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/175) | Portfolio trade history, and a correct cache and P&L |
 | [#124](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/124), [#156](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/156), [#157](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/157) | Settings page: back up and restore portfolio data, clear the cache, custom RPC |
-| [#163](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/163), [#167](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/167) | Trading with ETH, and the dev fee read from the factory |
+| [#163](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/163), [#167](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/167) | Trading with the native currency, and the dev fee read from the factory |
 | [#135](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/135), [#142](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/142), [#162](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/162) | Carried each contract change through: `IOracle` ABI, Mint and Burn events, new addresses |
+| [#188](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/188) | Polygon mainnet support: addresses, RPCs, Polygonscan links and the POL/USD feed |
 | [#171](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/171), [#173](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/173), [#174](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/174) | Fixes from the peer audit and a full review: trade and rebalance flow, wrong-network writes, create and explore bugs |
 | [#134](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/134), [#155](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/155), [#165](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/165), [#169](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/169) | Terms of Use modal, a sandboxed chart widget, SEO metadata and UI polish |
-| [#125](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/125), [#126](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/126), [#180](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/180) | CI for lint, build and tests, with Vitest unit tests |
+| [#182](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/182) | PR previews kept out of search results, and a share button |
+| [#125](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/125), [#126](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/126), [#179](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/179), [#180](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/180) | CI for lint, build and tests, with Vitest unit tests and a build with no lint warnings |
+| [#184](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/184) | The AI security review of the frontend and its remediations, published in `security-reviews/` |
+| [#189](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/189) | Version 1.0.0 and the release items of the best-practices checklist (open) |
 
 ### 5. IndexedDB-Import-Export
 
@@ -160,18 +166,22 @@ On the frontend I rebuilt the data layer on direct RPC with a **chunked log scan
 
 ### 6. Across the organization
 
-- Contributor, agent, security and maintainer docs, best-practices checklists and OpenSSF Scorecard for both Fate repos ([FE #118](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/118), [FE #119](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/119), [SOL #73](https://github.com/StabilityNexus/Fate-Solidity/pull/73)–[#75](https://github.com/StabilityNexus/Fate-Solidity/pull/75)).
-- AI moderation workflows for issues and PRs ([FE #168](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/168), [SOL #72](https://github.com/StabilityNexus/Fate-Solidity/pull/72)).
-- The new Fate logo on the frontends and the [Stability Nexus website](https://github.com/StabilityNexus/Website/pull/65), and MAINTAINERS files across the Fate repos.
+- Contributor, agent, security and maintainer docs, best-practices checklists and OpenSSF Scorecard for both Fate repos ([FE #118](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/118), [FE #119](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/119), [FE #176](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/176)–[#178](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/178), [SOL #73](https://github.com/StabilityNexus/Fate-Solidity/pull/73)–[#75](https://github.com/StabilityNexus/Fate-Solidity/pull/75)).
+- AI moderation workflows for issues and PRs ([FE #168](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/168), [SOL #72](https://github.com/StabilityNexus/Fate-Solidity/pull/72)), and the AOSSIE security review skills ([FE #183](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/183), [SOL #78](https://github.com/StabilityNexus/Fate-Solidity/pull/78)).
+- The new Fate logo on the frontends and the [Stability Nexus website](https://github.com/StabilityNexus/Website/pull/65), and MAINTAINERS files across the Fate repos, with me added as a maintainer ([FE #181](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/181), [SOL #77](https://github.com/StabilityNexus/Fate-Solidity/pull/77)).
 - Reviewed 15 PRs in Fate, Chainvoice, ThruBox, IdentityTokens and Karma.
 - A peer audit of Chainvoice for the PPP program (Atharva Naik audited Fate in return).
 
 ## Deployments
 
-All contracts are verified on Etherscan. Full record with constructor parameters and transactions: [Deployments.md](https://github.com/StabilityNexus/Fate-Solidity/blob/main/Deployments.md).
+All contracts are verified on Polygonscan and Etherscan. Full record with constructor parameters and transactions: [Deployments.md](https://github.com/StabilityNexus/Fate-Solidity/blob/main/Deployments.md).
 
 | Network | Chain ID | Contract | Address |
 |---|:-:|---|---|
+| Polygon | 137 | `PredictionPoolFactory` | [`0xeB944f4b7151E1bA2473e85CbeAE944246f17B9e`](https://polygonscan.com/address/0xeB944f4b7151E1bA2473e85CbeAE944246f17B9e) |
+| Polygon | 137 | `ChainlinkAdapterFactory` | [`0x7CA56fe0f49448641BcE5E6c5777076C7C6E5f8a`](https://polygonscan.com/address/0x7CA56fe0f49448641BcE5E6c5777076C7C6E5f8a) |
+| Polygon | 137 | `FateAdapterFactory` | [`0x1403Ec5A9FaCE415a28Bb9D8e7306e3632778EE8`](https://polygonscan.com/address/0x1403Ec5A9FaCE415a28Bb9D8e7306e3632778EE8) |
+| Polygon | 137 | `NativeCurrencyHelper` | [`0xa22e1CD0E115368A2E3fEb2b1ea2c08bdf8a38CD`](https://polygonscan.com/address/0xa22e1CD0E115368A2E3fEb2b1ea2c08bdf8a38CD) |
 | Ethereum Sepolia | 11155111 | `PredictionPoolFactory` | [`0x6935432472c180238703805f9809639439b783b6`](https://sepolia.etherscan.io/address/0x6935432472c180238703805f9809639439b783b6) |
 | Ethereum Sepolia | 11155111 | `ChainlinkAdapterFactory` | [`0xE6aFB97bAb25bB9623246cc18Ce624a9821cc2Bd`](https://sepolia.etherscan.io/address/0xE6aFB97bAb25bB9623246cc18Ce624a9821cc2Bd) |
 | Ethereum Sepolia | 11155111 | `FateAdapterFactory` | [`0x4CC9499899295Da20cFbDa7cB8788E0E8bA4f361`](https://sepolia.etherscan.io/address/0x4CC9499899295Da20cFbDa7cB8788E0E8bA4f361) |
@@ -183,34 +193,12 @@ All contracts are verified on Etherscan. Full record with constructor parameters
 
 | Pool | Address | Oracle |
 |---|---|---|
+| WPOL / POL-USD 1x | [`0x9a89A1eC7BE0c6A5DeC5FB759420CBB230A456Ef`](https://polygonscan.com/address/0x9a89A1eC7BE0c6A5DeC5FB759420CBB230A456Ef) | Chainlink POL/USD |
 | WETH / ETH-USD 1x | [`0xA0521aEEa7CcbeBefaAb86c89d91A4C818006e3C`](https://sepolia.etherscan.io/address/0xA0521aEEa7CcbeBefaAb86c89d91A4C818006e3C) | Chainlink ETH/USD |
 | WETH / ETH-USD 2x | [`0x75ae8295ddaDb8b27888AFDE5D0Ee29bBebF99dB`](https://sepolia.etherscan.io/address/0x75ae8295ddaDb8b27888AFDE5D0Ee29bBebF99dB) | Chainlink ETH/USD, 2x leverage |
 | WETH / ETH-USD 1x Sentiment | [`0x1E2e3F57EF90ecA873536D6220F33D45f1DDaF1C`](https://sepolia.etherscan.io/address/0x1E2e3F57EF90ecA873536D6220F33D45f1DDaF1C) | Sentiment of the 1x pool, through `FateOracleAdapter` |
 
 </details>
-
-## Known issues
-
-From the peer audit by Atharva Naik and my own review. The contract items are for Bruno to decide on before mainnet.
-
-The audit found 14 issues (1 critical, 5 medium, 8 low). The frontend ones are fixed: wrong-chain writes (#1, critical), the stale position after a trade (#6), low-contrast text (#13) and the permit deadline (#14). The deployment records (#10) are updated in open PRs. Still open:
-
-| # | Severity | Issue |
-|:-:|:-:|---|
-| 2 | Medium | Minting rounds up, so a side whose supply is down to dust can be drained |
-| 3 | Medium | A pool driven by the sentiment oracle can be moved within one transaction |
-| 4 | Medium | If a USDC-style base token blacklists a fee receiver, the pool's sells and transfers revert |
-| 5 | Medium | Chainlink answers are used without a staleness check |
-| 7 | Low | A huge custom-oracle value overflows and makes every trade revert |
-| 8 | Low | Dust sells and transfers revert, because each fee rounds up |
-| 9 | Low | Floating `^0.8.19` pragma |
-| 11 | Low | Vulnerable npm dependencies (the live site is a static export, so the Next server advisories do not reach it) |
-| 12 | Low | `forge coverage` fails with "stack too deep", and the fork test needs an archive RPC |
-
-#2 to #5 need a redeploy. Other known issues from my own review:
-
-- A sole holder can never sell a side's last coins (`SupplyWouldBecomeZero`), so a creator's seed pool never fully closes.
-- Portfolio totals add up different base tokens, and cached cost and P&L are estimates.
 
 ## Challenges and lessons
 
@@ -222,7 +210,6 @@ The audit found 14 issues (1 critical, 5 medium, 8 low). The frontend ones are f
 
 ## Future work
 
-- Deploy to mainnet, and fix or accept the open audit findings first.
 - Let a RainDrop vault distribute Fate's dev fees to stakers (`dropFromUndroppedBalance`).
 - More chains, and the parked frontend items (creator dashboard counters, fee charts, 7d/30d rankings).
 
@@ -232,10 +219,10 @@ Thank you to my mentors [@blizet](https://github.com/blizet), [@Zahnentferner](h
 
 ## All pull requests
 
-114 PRs across 11 repositories (90 merged, 19 open, 5 closed) as of Oct 27, 2026. Open PRs are updated as they merge.
+124 PRs across 11 repositories (111 merged, 7 open, 6 closed) as of Nov 2, 2026.
 
 <details>
-<summary><b>StabilityNexus/Fate-Solidity</b>: 51 PRs, 40 merged, 7 open, 4 closed</summary>
+<summary><b>StabilityNexus/Fate-Solidity</b>: 55 PRs, 51 merged, 0 open, 4 closed</summary>
 <br>
 
 | PR | Title | Status | Opened |
@@ -245,7 +232,7 @@ Thank you to my mentors [@blizet](https://github.com/blizet), [@Zahnentferner](h
 | [#24](https://github.com/StabilityNexus/Fate-Solidity/pull/24) | Add 2x2 sentiment signals and EWMA to FateOracleBase | Merged | 2026-06-25 |
 | [#26](https://github.com/StabilityNexus/Fate-Solidity/pull/26) | Add FeeVault treasury-fee accumulator | Merged | 2026-06-28 |
 | [#28](https://github.com/StabilityNexus/Fate-Solidity/pull/28) | Route protocol treasury fees to global AccumulatorVault | Merged | 2026-07-03 |
-| [#29](https://github.com/StabilityNexus/Fate-Solidity/pull/29) | [Finding] Coin.transfer / transferFrom revert for any nonzero amount | Closed | 2026-07-06 |
+| [#29](https://github.com/StabilityNexus/Fate-Solidity/pull/29) | [Finding] Coin.transfer / transferFrom revert for any nonzero amount | Closed (fixed in [#32](https://github.com/StabilityNexus/Fate-Solidity/pull/32)) | 2026-07-06 |
 | [#31](https://github.com/StabilityNexus/Fate-Solidity/pull/31) | Add FateOracleAdapter (sentiment → IOracle) and factory | Merged | 2026-07-07 |
 | [#32](https://github.com/StabilityNexus/Fate-Solidity/pull/32) | Fix self-transferFrom revert in Coin transfer path | Merged | 2026-07-07 |
 | [#34](https://github.com/StabilityNexus/Fate-Solidity/pull/34) | Add on-chain lifetime counters to Coin and PredictionPool | Closed | 2026-07-30 |
@@ -284,18 +271,22 @@ Thank you to my mentors [@blizet](https://github.com/blizet), [@Zahnentferner](h
 | [#68](https://github.com/StabilityNexus/Fate-Solidity/pull/68) | Fix forge script deploys on post-Glamsterdam Sepolia | Merged | 2026-10-14 |
 | [#69](https://github.com/StabilityNexus/Fate-Solidity/pull/69) | Replace the AccumulatorVault with a factory dev fee | Merged | 2026-10-20 |
 | [#70](https://github.com/StabilityNexus/Fate-Solidity/pull/70) | Move variable comments beside the variables | Merged | 2026-10-21 |
-| [#71](https://github.com/StabilityNexus/Fate-Solidity/pull/71) | Document the Oct 21 Sepolia redeploy | Open | 2026-10-21 |
-| [#72](https://github.com/StabilityNexus/Fate-Solidity/pull/72) | Add AI moderation workflows for issues and PRs | Open | 2026-10-23 |
-| [#73](https://github.com/StabilityNexus/Fate-Solidity/pull/73) | Add contributor, agent and security docs | Open | 2026-10-26 |
-| [#74](https://github.com/StabilityNexus/Fate-Solidity/pull/74) | Add the best practices checklist | Open | 2026-10-26 |
-| [#75](https://github.com/StabilityNexus/Fate-Solidity/pull/75) | Tailor CodeRabbit and add OpenSSF Scorecard | Open | 2026-10-26 |
-| [#76](https://github.com/StabilityNexus/Fate-Solidity/pull/76) | Pin forge-std and fix the test warnings | Open | 2026-10-26 |
-| [#77](https://github.com/StabilityNexus/Fate-Solidity/pull/77) | Add Rohan as a maintainer | Open | 2026-10-27 |
+| [#71](https://github.com/StabilityNexus/Fate-Solidity/pull/71) | Document the Oct 21 Sepolia redeploy | Merged | 2026-10-21 |
+| [#72](https://github.com/StabilityNexus/Fate-Solidity/pull/72) | Add AI moderation workflows for issues and PRs | Merged | 2026-10-23 |
+| [#73](https://github.com/StabilityNexus/Fate-Solidity/pull/73) | Add contributor, agent and security docs | Merged | 2026-10-26 |
+| [#74](https://github.com/StabilityNexus/Fate-Solidity/pull/74) | Add the best practices checklist | Merged | 2026-10-26 |
+| [#75](https://github.com/StabilityNexus/Fate-Solidity/pull/75) | Tailor CodeRabbit and add OpenSSF Scorecard | Merged | 2026-10-26 |
+| [#76](https://github.com/StabilityNexus/Fate-Solidity/pull/76) | Pin forge-std and fix the test warnings | Merged | 2026-10-26 |
+| [#77](https://github.com/StabilityNexus/Fate-Solidity/pull/77) | Add Rohan as a maintainer | Merged | 2026-10-27 |
+| [#78](https://github.com/StabilityNexus/Fate-Solidity/pull/78) | Add the AOSSIE security review skills | Merged | 2026-10-29 |
+| [#79](https://github.com/StabilityNexus/Fate-Solidity/pull/79) | Publish the security review and remediations | Merged | 2026-10-29 |
+| [#80](https://github.com/StabilityNexus/Fate-Solidity/pull/80) | Fix and suppress the lint and Slither results | Merged | 2026-10-30 |
+| [#81](https://github.com/StabilityNexus/Fate-Solidity/pull/81) | Add the Polygon mainnet deployment | Merged | 2026-10-30 |
 
 </details>
 
 <details>
-<summary><b>StabilityNexus/Fate-EVM-Frontend</b>: 50 PRs, 43 merged, 6 open, 1 closed</summary>
+<summary><b>StabilityNexus/Fate-EVM-Frontend</b>: 56 PRs, 53 merged, 1 open, 2 closed</summary>
 <br>
 
 | PR | Title | Status | Opened |
@@ -344,12 +335,18 @@ Thank you to my mentors [@blizet](https://github.com/blizet), [@Zahnentferner](h
 | [#173](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/173) | Fix the frontend findings from the peer audit | Merged | 2026-10-25 |
 | [#174](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/174) | Fix bugs on the create and explore pages | Merged | 2026-10-25 |
 | [#175](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/175) | Fix the portfolio cache and P&L | Merged | 2026-10-25 |
-| [#176](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/176) | Refresh the brand kit docs | Open | 2026-10-26 |
-| [#177](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/177) | Bring the README up to date | Open | 2026-10-26 |
-| [#178](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/178) | Update the contributor docs and checklist | Open | 2026-10-26 |
-| [#179](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/179) | Fix the two build lint warnings | Open | 2026-10-26 |
-| [#180](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/180) | Run the tests strictly in CI | Open | 2026-10-26 |
-| [#181](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/181) | Add Rohan as a maintainer | Open | 2026-10-27 |
+| [#176](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/176) | Refresh the brand kit docs | Merged | 2026-10-26 |
+| [#177](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/177) | Bring the README up to date | Merged | 2026-10-26 |
+| [#178](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/178) | Update the contributor docs and checklist | Merged | 2026-10-26 |
+| [#179](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/179) | Fix the two build lint warnings | Merged | 2026-10-26 |
+| [#180](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/180) | Run the tests strictly in CI | Merged | 2026-10-26 |
+| [#181](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/181) | Add Rohan as a maintainer | Merged | 2026-10-27 |
+| [#182](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/182) | Keep previews unindexed and add a share button | Merged | 2026-10-29 |
+| [#183](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/183) | Add the AOSSIE security review skills | Merged | 2026-10-29 |
+| [#184](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/184) | Publish the security review and remediations | Merged | 2026-10-29 |
+| [#187](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/187) | Add Polygon mainnet support | Closed | 2026-10-30 |
+| [#188](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/188) | Add Polygon mainnet support | Merged | 2026-10-30 |
+| [#189](https://github.com/StabilityNexus/Fate-EVM-Frontend/pull/189) | Prepare the v1.0.0 release | Open | 2026-10-31 |
 
 </details>
 
