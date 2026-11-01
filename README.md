@@ -23,7 +23,7 @@
 |---|---|
 | **Contributor** | Rohan Shinde · [@rohans02](https://github.com/rohans02) |
 | **Organization** | [AOSSIE](https://aossie.org) · [Stability Nexus](https://stability.nexus) |
-| **Mentors** | Blizet ([@blizet](https://github.com/blizet)) · Bruno Woltzenlogel Paleo ([@Zahnentferner](https://github.com/Zahnentferner)) · Sarthak Dengre ([@DengreSarthak](https://github.com/DengreSarthak)) · Aditya Bhattad ([@adityabhattad2021](https://github.com/adityabhattad2021)) · Yogesh Agrawal ([@yogesh0509](https://github.com/yogesh0509)) · Raj Shah ([@Rajshah1302](https://github.com/Rajshah1302)) |
+| **Mentors** | Anjali Jha ([@blizet](https://github.com/blizet)) · Bruno Woltzenlogel Paleo ([@Zahnentferner](https://github.com/Zahnentferner)) · Sarthak Dengre ([@DengreSarthak](https://github.com/DengreSarthak)) · Aditya Bhattad ([@adityabhattad2021](https://github.com/adityabhattad2021)) · Yogesh Agrawal ([@yogesh0509](https://github.com/yogesh0509)) · Raj Shah ([@Rajshah1302](https://github.com/Rajshah1302)) |
 | **Repositories** | [StabilityNexus/Fate-Solidity](https://github.com/StabilityNexus/Fate-Solidity) · [StabilityNexus/Fate-EVM-Frontend](https://github.com/StabilityNexus/Fate-EVM-Frontend) · [AOSSIE-Org/IndexedDB-Import-Export](https://github.com/AOSSIE-Org/IndexedDB-Import-Export) |
 | **Project size** | Large (350 hours, 22 weeks) · May 26 – Nov 2, 2026 |
 | **Live app** | [evm.fate.stability.nexus](http://evm.fate.stability.nexus/) |
